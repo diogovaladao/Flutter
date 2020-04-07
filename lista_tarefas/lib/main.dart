@@ -5,7 +5,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 
-void main(){
+void main() {
   runApp(MaterialApp(
     home: Home(),
   ));
@@ -17,8 +17,29 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-
+  final _toDoContrle = TextEditingController();
   List _toDoList = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _readDado().then((dados) {
+      setState(() {
+        _toDoList = json.decode(dados);
+      });
+    });
+  }
+
+  void _addToDo() {
+    setState(() {
+      Map<String, dynamic> newToDo = Map();
+      newToDo["title"] = _toDoContrle.text;
+      _toDoContrle.text = "";
+      newToDo["ok"] = false;
+      _toDoList.add(newToDo);
+      _saveData();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,34 +57,40 @@ class _HomeState extends State<Home> {
               children: <Widget>[
                 Expanded(
                   child: TextField(
+                    controller: _toDoContrle,
                     decoration: InputDecoration(
                         labelText: "Nova Tarefa",
-                        labelStyle: TextStyle(color: Colors.blueAccent)
-                    ),
+                        labelStyle: TextStyle(color: Colors.blueAccent)),
                   ),
                 ),
                 RaisedButton(
                   color: Colors.blueAccent,
                   child: Text("ADD"),
                   textColor: Colors.white,
-                  onPressed: (){},
+                  onPressed: _addToDo,
                 )
               ],
             ),
           ),
           Expanded(
             child: ListView.builder(
-              padding: EdgeInsets.only(top: 10.0),
+                padding: EdgeInsets.only(top: 10.0),
                 itemCount: _toDoList.length,
-                itemBuilder: (context, index){
-                    return CheckboxListTile(
-                      title: Text(_toDoList[index]["title"]),
-                      value: _toDoList[index]["ok"],
-                      secondary: CircleAvatar(
-                        child: Icon(_toDoList[index]["ok"]?
-                        Icons.check : Icons.error),
-                      ),
-                    );
+                itemBuilder: (context, index) {
+                  return CheckboxListTile(
+                    title: Text(_toDoList[index]["title"]),
+                    value: _toDoList[index]["ok"],
+                    secondary: CircleAvatar(
+                      child: Icon(
+                          _toDoList[index]["ok"] ? Icons.check : Icons.error),
+                    ),
+                    onChanged: (c) {
+                      setState(() {
+                        _toDoList[index]["ok"] = c;
+                        _saveData();
+                      });
+                    },
+                  );
                 }),
           )
         ],
@@ -71,7 +98,7 @@ class _HomeState extends State<Home> {
     );
   }
 
-  Future<File> _getFile() async{
+  Future<File> _getFile() async {
     final diretorio = await getApplicationDocumentsDirectory();
     return File("${diretorio.path}/data.json");
   }
@@ -86,7 +113,7 @@ class _HomeState extends State<Home> {
     try {
       final arquivo = await _getFile();
       return arquivo.readAsString();
-    } catch (e){
+    } catch (e) {
       return null;
     }
   }
