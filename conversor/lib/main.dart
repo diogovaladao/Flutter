@@ -9,6 +9,7 @@ const requisicao =
 void main() async {
   runApp(MaterialApp(
     home: Home(),
+    debugShowCheckedModeBanner: false,
     theme: ThemeData(hintColor: Colors.amber, primaryColor: Colors.white),
   ));
 }

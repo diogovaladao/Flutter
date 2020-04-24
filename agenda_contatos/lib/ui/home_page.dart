@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:agendacontatos/helpers/contact_helper.dart';
+import 'package:agendacontatos/ui/contact_page.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {
@@ -15,11 +16,7 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    helper.getAllContatos().then((list) {
-      setState(() {
-        listaContatos = list;
-      });
-    });
+    _getAllContatos();
   }
 
   @override
@@ -32,7 +29,9 @@ class _HomePageState extends State<HomePage> {
       ),
       backgroundColor: Colors.white,
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: () {
+          _showContactPage();
+        },
         child: Icon(Icons.add),
         backgroundColor: Colors.red,
       ),
@@ -58,12 +57,10 @@ class _HomePageState extends State<HomePage> {
                 height: 80.0,
                 decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    /*  image: DecorationImage(
+                    image: DecorationImage(
                         image: listaContatos[index].img != null
                             ? FileImage(File(listaContatos[index].img))
-                            : AssetImage("/images/person.png")
-                    )*/
-                ),
+                            : AssetImage("/images/person.png"))),
               ),
               Padding(
                 padding: EdgeInsets.only(left: 10.0),
@@ -90,6 +87,34 @@ class _HomePageState extends State<HomePage> {
           ),
         ),
       ),
+      onTap: () {
+        _showContactPage(contato: listaContatos[index]);
+      },
     );
+  }
+
+  void _showContactPage({Contato contato}) async {
+    final recebeContato = await Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => ContactPage(
+                  contato: contato,
+                )));
+    if (recebeContato != null) {
+      if (contato != null) {
+        await helper.updateContato(recebeContato);
+      } else {
+        await helper.salvarContato(recebeContato);
+      }
+      _getAllContatos();
+    }
+  }
+
+  void _getAllContatos() {
+    helper.getAllContatos().then((list) {
+      setState(() {
+        listaContatos = list;
+      });
+    });
   }
 }
