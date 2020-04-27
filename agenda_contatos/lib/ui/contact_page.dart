@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:agendacontatos/helpers/contact_helper.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 
 class ContactPage extends StatefulWidget {
   final Contato contato;
@@ -67,10 +68,13 @@ class _ContactPageState extends State<ContactPage> {
                   decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       image: DecorationImage(
-                          image: _contatoEditado.img != null
-                              ? FileImage(File(_contatoEditado.img))
-                              : AssetImage("/images/person.png"))),
+                          image: _contatoEditado.img != null ?
+                          FileImage(File(_contatoEditado.img)) :
+                          AssetImage("/images/person.png"))),
                 ),
+                onTap: (){
+                  _esolheFonte();
+                },
               ),
               //campo para digitação
               TextField(
@@ -140,4 +144,43 @@ class _ContactPageState extends State<ContactPage> {
       return Future.value(true);
     }
   }
+
+  //escolher entre câmera e galeria
+    Widget _esolheFonte(){
+      showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              title: Text("Alterar foto?"),
+              actions: <Widget>[
+                FlatButton(
+                  child: Text("Escolher foto"),
+                  onPressed: () {
+                    ImagePicker.pickImage(source: ImageSource.gallery).then((file){
+                      verificaFoto(file);
+                    });
+                  },
+                ),
+                FlatButton(
+                  child: Text("Tirar foto"),
+                  onPressed: () {
+                    ImagePicker.pickImage(source: ImageSource.camera).then((file){
+                      verificaFoto(file);
+                    });
+                  },
+                )
+              ],
+            );
+          });
+    }
+
+    void verificaFoto(file){
+      if(file == null){
+        return null;
+      }
+      setState(() {
+        _contatoEditado.img = file.path;
+      });
+      Navigator.pop(context);
+    }
 }

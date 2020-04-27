@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:agendacontatos/helpers/contact_helper.dart';
 import 'package:agendacontatos/ui/contact_page.dart';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -88,9 +89,71 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
       onTap: () {
-        _showContactPage(contato: listaContatos[index]);
+        //_showContactPage(contato: listaContatos[index]);
+        _showOptions(context, index);
       },
     );
+  }
+
+  void _showOptions(BuildContext context, int index) {
+    showModalBottomSheet(
+        context: context,
+        builder: (context) {
+          return BottomSheet(
+            onClosing: () {},
+            builder: (context) {
+              return Container(
+                padding: EdgeInsets.all(10.0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    Padding(
+                      padding: EdgeInsets.all(10.0),
+                      child: FlatButton(
+                        child: Text("Ligar",
+                          style: TextStyle(color: Colors.red, fontSize: 20.0),
+                        ),
+                        onPressed: () {
+                          launch("tel:${listaContatos[index].fone}");
+                          Navigator.pop(context);
+                        },
+                      ),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.all(10.0),
+                      child: FlatButton(
+                        child: Text(
+                          "Editar",
+                          style: TextStyle(color: Colors.red, fontSize: 20.0),
+                        ),
+                        onPressed: () {
+                          Navigator.pop(context);
+                          _showContactPage(contato: listaContatos[index]);
+                        },
+                      ),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.all(10.0),
+                      child: FlatButton(
+                        child: Text(
+                          "Excluir",
+                          style: TextStyle(color: Colors.red, fontSize: 20.0),
+                        ),
+                        onPressed: () {
+                          helper.deletaContato(listaContatos[index].id);
+                          setState(() {
+                            listaContatos.removeAt(index);
+                            Navigator.pop(context);
+                          });
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
+          );
+        });
   }
 
   void _showContactPage({Contato contato}) async {
