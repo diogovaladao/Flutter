@@ -5,7 +5,7 @@ import 'package:agendacontatos/ui/contact_page.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-enum OrderOptions {orderaz, orderza}
+enum OrderOptions { orderaz, orderza }
 
 class HomePage extends StatefulWidget {
   @override
@@ -106,7 +106,6 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
       onTap: () {
-        //_showContactPage(contato: listaContatos[index]);
         _showOptions(context, index);
       },
     );
@@ -127,7 +126,8 @@ class _HomePageState extends State<HomePage> {
                     Padding(
                       padding: EdgeInsets.all(10.0),
                       child: FlatButton(
-                        child: Text("Ligar",
+                        child: Text(
+                          "Ligar",
                           style: TextStyle(color: Colors.red, fontSize: 20.0),
                         ),
                         onPressed: () {
@@ -198,21 +198,19 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  void _orderList(OrderOptions result){
-    switch(result){
+  void _orderList(OrderOptions result) {
+    switch (result) {
       case OrderOptions.orderaz:
-        listaContatos.sort((a, b){
-         return a.nome.toLowerCase().compareTo(b.nome.toLowerCase());
+        listaContatos.sort((a, b) {
+          return a.nome.toLowerCase().compareTo(b.nome.toLowerCase());
         });
         break;
       case OrderOptions.orderza:
-        listaContatos.sort((a, b){
+        listaContatos.sort((a, b) {
           return b.nome.toLowerCase().compareTo(a.nome.toLowerCase());
         });
         break;
     }
-    setState(() {
-
-    });
+    setState(() {});
   }
 }
