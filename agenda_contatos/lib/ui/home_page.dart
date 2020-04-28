@@ -177,9 +177,7 @@ class _HomePageState extends State<HomePage> {
     final recebeContato = await Navigator.push(
         context,
         MaterialPageRoute(
-            builder: (context) => ContactPage(
-                  contato: contato,
-                )));
+            builder: (context) => ContactPage(contato: contato,)));
     if (recebeContato != null) {
       if (contato != null) {
         await helper.updateContato(recebeContato);
