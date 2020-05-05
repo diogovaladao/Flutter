@@ -1,6 +1,9 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+
+//import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 void main() async {
   runApp(MyApp());
@@ -15,6 +18,51 @@ final ThemeData kDefaultTheme = ThemeData(
   primarySwatch: Colors.purple,
   accentColor: Colors.orangeAccent[400],
 );
+
+final googleSignIn = GoogleSignIn();
+final auth = FirebaseAuth.instance;
+
+Future<FirebaseUser> login() async {
+  GoogleSignInAccount usuarioLogado = googleSignIn.currentUser;
+
+  if (usuarioLogado == null) {
+    usuarioLogado = await googleSignIn.signInSilently();
+  }
+  if (usuarioLogado == null) {
+    usuarioLogado = await googleSignIn.signIn();
+  }
+  if (usuarioLogado == null) {
+    usuarioLogado = await googleSignIn.signIn();
+  }
+
+  //se der merda tire esse if
+  if (await auth.currentUser() == null) {
+    final GoogleSignInAccount usuarioGoogle = await googleSignIn.signIn();
+    final GoogleSignInAuthentication googleAuth = await usuarioGoogle.authentication;
+
+    final AuthCredential credential = GoogleAuthProvider.getCredential(
+      accessToken: googleAuth.accessToken,
+      idToken: googleAuth.idToken,
+    );
+    final FirebaseUser user =
+        (await auth.signInWithCredential(credential)).user;
+    print("signed in " + user.displayName);
+    return user;
+  }
+}
+/*_usuarioLogado() async{
+  GoogleSignInAccount usuario = googleSignIn.currentUser;
+  if(usuario == null){
+    usuario = await googleSignIn.signInSilently();
+  }
+  if(usuario == null){
+    usuario = await googleSignIn.signIn();
+  }
+  if(await auth.currentUser() == null){
+    GoogleSignInAuthentication credenciais = await googleSignIn.currentUser.authentication;
+    await auth.signInWithCredential(credenciais.idToken);
+  }
+}*/
 
 class MyApp extends StatelessWidget {
   @override
@@ -52,11 +100,7 @@ class _ChatScreenState extends State<ChatScreen> {
           children: <Widget>[
             Expanded(
               child: ListView(
-                children: <Widget>[
-                  ChatMessage(),
-                  ChatMessage(),
-                  ChatMessage()
-                ],
+                children: <Widget>[ChatMessage(), ChatMessage(), ChatMessage()],
               ),
             ),
             Divider(
