@@ -1,12 +1,9 @@
 import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
-//import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -40,7 +37,7 @@ Future<FirebaseUser> _usuarioLogado() async {
     usuarioLogado = await googleSignIn.signIn();
   }
 
-  //se der merda tire esse if
+  //autenticando no firebase
   if (await auth.currentUser() == null) {
     final GoogleSignInAccount usuarioGoogle = await googleSignIn.signIn();
     final GoogleSignInAuthentication googleAuth =
@@ -70,19 +67,6 @@ void _enviarMensagem({String text, String imgUrl}) {
     "senderUrlfoto": googleSignIn.currentUser.photoUrl
   });
 }
-/*_usuarioLogado() async{
-  GoogleSignInAccount usuario = googleSignIn.currentUser;
-  if(usuario == null){
-    usuario = await googleSignIn.signInSilently();
-  }
-  if(usuario == null){
-    usuario = await googleSignIn.signIn();
-  }
-  if(await auth.currentUser() == null){
-    GoogleSignInAuthentication credenciais = await googleSignIn.currentUser.authentication;
-    await auth.signInWithCredential(credenciais.idToken);
-  }
-}*/
 
 class MyApp extends StatelessWidget {
   @override
@@ -197,9 +181,9 @@ class _TextComposerState extends State<TextComposer> {
                         StorageUploadTask task = FirebaseStorage.instance.ref().
                         child(googleSignIn.currentUser.id.toString() +
                             DateTime.now().millisecondsSinceEpoch.toString()).putFile(arquivoImagem);
-                        //_enviarMensagem(imgUrl: (await task.future).downloadUrl.toString())
-
-
+                        StorageTaskSnapshot taskSnapshot = await task.onComplete;
+                        String url = await taskSnapshot.ref.getDownloadURL();
+                        _enviarMensagem(imgUrl: url);
                       }
                   ),
             ),
