@@ -187,6 +187,26 @@ class _TextComposerState extends State<TextComposer> {
                       }
                   ),
             ),
+            //apagar aqui pra baixo
+            Container(
+              child:
+              IconButton(icon: Icon(Icons.attachment),
+                  onPressed: () async{
+                    await _usuarioLogado();
+                    File arquivoImagem = await ImagePicker.pickImage(source: ImageSource.gallery);
+                    if(arquivoImagem == null){
+                      return;
+                    }
+                    StorageUploadTask task = FirebaseStorage.instance.ref().
+                    child(googleSignIn.currentUser.id.toString() +
+                        DateTime.now().millisecondsSinceEpoch.toString()).putFile(arquivoImagem);
+                    StorageTaskSnapshot taskSnapshot = await task.onComplete;
+                    String url = await taskSnapshot.ref.getDownloadURL();
+                    _enviarMensagem(imgUrl: url);
+                  }
+              ),
+            ),
+            // apagar daqui pra cima
             Expanded(
               child: TextField(
                 controller: _textController,
@@ -197,9 +217,6 @@ class _TextComposerState extends State<TextComposer> {
                     _isComposing = text.length > 0;
                   });
                 },
-                /*onSubmitted: (text){
-                  _handleSubmited(text);
-                },*/
               ),
             ),
             Container(
