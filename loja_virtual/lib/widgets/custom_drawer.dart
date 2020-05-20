@@ -3,6 +3,10 @@ import 'package:lojavirtual/titles/drawer_title.dart';
 
 class CustomDrawer extends StatelessWidget {
 
+  // permite alterar página pelo meno
+  final PageController pageController;
+  CustomDrawer(this.pageController);
+
   @override
   Widget build(BuildContext context) {
     Widget _builderDrawerBack() => Container(
@@ -62,10 +66,10 @@ class CustomDrawer extends StatelessWidget {
                 ),
               ),
               Divider(),
-              DrawerTitle(Icons.home, "Início"),
-              DrawerTitle(Icons.list, "Produtos"),
-              DrawerTitle(Icons.location_on, "Lojas"),
-              DrawerTitle(Icons.playlist_add_check, "Meus Pedidos"),
+              DrawerTitle(Icons.home, "Início", pageController, 0),
+              DrawerTitle(Icons.list, "Produtos", pageController, 1),
+              DrawerTitle(Icons.location_on, "Lojas", pageController, 2),
+              DrawerTitle(Icons.playlist_add_check, "Meus Pedidos", pageController, 3),
             ],
           )
         ],
