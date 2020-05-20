@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:lojavirtual/screen/produto_screen.dart';
 
 class CategoriaTitle extends StatelessWidget {
 
@@ -18,7 +19,9 @@ class CategoriaTitle extends StatelessWidget {
       title: Text(snapshot.data["titulo"]),
       trailing: Icon(Icons.keyboard_arrow_right),
       onTap: (){
-
+        Navigator.of(context).push(
+          MaterialPageRoute(builder: (context)=> ProdutoScreen(snapshot))
+        );
       },
     );
   }
