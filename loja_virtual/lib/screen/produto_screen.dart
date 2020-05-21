@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:lojavirtual/datas/dado_produto.dart';
+import 'package:lojavirtual/titles/produto_title.dart';
 
 class ProdutoScreen extends StatelessWidget {
 
@@ -23,13 +25,40 @@ class ProdutoScreen extends StatelessWidget {
               ],
             ),
           ),
-          body: TabBarView(
-            physics: NeverScrollableScrollPhysics(),
-              children: [
-                Container(color: Colors.red),
-                Container(color: Colors.green)
-              ]
-          ),
+          body: FutureBuilder<QuerySnapshot>(
+            future: Firestore.instance.collection("produtos").document(snapshot.documentID)
+              .collection("itens").getDocuments(),
+            builder: (context, snapshot){
+             if(!snapshot.hasData)
+               return Center(child: CircularProgressIndicator());
+             else
+               return TabBarView(
+                   physics: NeverScrollableScrollPhysics(),
+                   children: [
+                     GridView.builder(
+                       padding: EdgeInsets.all(4.0),
+                       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                         crossAxisCount: 2,
+                         mainAxisSpacing: 4.0,
+                         crossAxisSpacing: 4.0,
+                         childAspectRatio: 0.65,
+                       ),
+                       itemCount: snapshot.data.documents.length,
+                       itemBuilder: (context, index){
+                         return ProdutoTitle("grid", DadoProduto.fromDocument(snapshot.data.documents[index]));
+                       }
+                     ),
+                     ListView.builder(
+                       padding: EdgeInsets.all(4.0),
+                       itemCount: snapshot.data.documents.length,
+                       itemBuilder:(context, index){
+                         return ProdutoTitle("list", DadoProduto.fromDocument(snapshot.data.documents[index]));
+                       }
+                     )
+                   ]
+               );
+            }
+          )
         ),
     );
   }
